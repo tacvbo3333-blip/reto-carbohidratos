@@ -280,7 +280,7 @@ function saveResult(){
   if(resultSent) return;
   resultSent=true;
   const data={nombre:player, aciertos:score/100, puntaje:score, total:500};
-  fetch("https://script.google.com/macros/s/AKfycbzhvvysxvjTz0L1mj5E6JBZ6eylY086cOvIAizQRaz6NwmrTuwMBuh-mzpBsLzCYaXd/exec", {
+  fetch("https://script.google.com/macros/s/AKfycbzhvvysxvjTz0L1mj5E6JBZ6eylY086cOvIAizQRaz6NwmrTuwMBuh-mzpBsLzCYaXd/exec", {,
     method:"POST",
     mode:"no-cors",
     headers:{"Content-Type":"text/plain;charset=utf-8"},
