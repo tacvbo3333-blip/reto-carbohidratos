@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reto Carbohidratos</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0; min-height:100vh; font-family:Arial,Helvetica,sans-serif; color:#fff;
+ background:
+ radial-gradient(circle at 15% 20%,rgba(255,29,157,.25),transparent 25%),
+ radial-gradient(circle at 85% 75%,rgba(0,203,255,.25),transparent 30%),
+ linear-gradient(135deg,#13092e,#24106c 55%,#062f63);
+}
+.wrap{max-width:1050px;margin:auto;padding:28px 22px 45px}
+.top{display:flex;justify-content:space-between;gap:20px;align-items:center}
+.kicker{font-weight:900;color:#ffb340;letter-spacing:1px}
+h1{font-size:clamp(30px,5vw,55px);margin:6px 0 16px}
+.stats{display:flex;gap:12px;font-size:22px;font-weight:900}
+.stat{background:#15102f;border:2px solid #342391;border-radius:18px;padding:12px 18px}
+.progress{height:17px;border:3px solid #4a2ca4;border-radius:20px;overflow:hidden;margin:10px 0 24px}
+#bar{height:100%;width:20%;background:linear-gradient(90deg,#ff1596,#ff8a21);transition:.35s}
+.card{
+ background:rgba(25,18,70,.87); border:2px solid rgba(255,255,255,.22);
+ border-radius:28px; padding:24px; box-shadow:0 18px 50px rgba(0,0,0,.3)
+}
+.meta{display:flex;justify-content:space-between;font-weight:900;margin-bottom:16px}
+.visual{
+ min-height:170px;border-radius:27px;padding:22px 28px;display:flex;align-items:center;
+ justify-content:space-between;gap:25px;
+ background:linear-gradient(110deg,#ff1c9d,#6337ff 52%,#00c7ed);
+ border:2px solid rgba(255,255,255,.55); box-shadow:0 10px 0 rgba(0,0,0,.16)
+}
+.symbols{display:flex;align-items:center;justify-content:center;min-width:38%;gap:10px}
+.hex{width:72px;height:64px;background:#ffb234;clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%)}
+.link{width:30px;height:9px;border-radius:10px;background:#fff}
+.pista{
+ background:#ffe45c;color:#37245f;padding:18px 24px;border-radius:22px;
+ font-size:clamp(15px,2vw,21px);font-weight:800;max-width:52%;
+ box-shadow:0 8px 0 rgba(43,22,98,.5)
+}
+.pista b{display:block;color:#e81a78;font-size:22px;margin-bottom:4px}
+.question{text-align:center;font-size:clamp(25px,3.6vw,40px);font-weight:900;margin:25px 0 20px}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.answer{
+ border:3px solid rgba(255,255,255,.72);border-radius:22px;padding:15px 18px;
+ display:flex;align-items:center;gap:15px;color:white;font-size:21px;font-weight:900;
+ cursor:pointer;transition:transform .12s,filter .12s,box-shadow .12s;
+ box-shadow:0 7px 0 rgba(0,0,0,.18)
+}
+.answer:hover{transform:translateY(-3px) scale(1.01);filter:brightness(1.08)}
+.answer:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.18)}
+.answer:nth-child(1){background:linear-gradient(90deg,#ef168e,#ff3f9e)}
+.answer:nth-child(2){background:linear-gradient(90deg,#159ee9,#10c7ec)}
+.answer:nth-child(3){background:linear-gradient(90deg,#17b969,#26dc91)}
+.answer:nth-child(4){background:linear-gradient(90deg,#ff8b32,#ffad36)}
+.num{
+ width:54px;height:54px;flex:0 0 54px;border-radius:50%;display:grid;place-items:center;
+ background:#fff;color:#503b98;font-size:27px;font-weight:900
+}
+.answer.correct{background:#16c76a!important;outline:5px solid rgba(80,255,170,.35)}
+.answer.wrong{background:#e73555!important;animation:shake .28s}
+@keyframes shake{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+#feedback{text-align:center;min-height:36px;margin-top:18px;font-size:21px;font-weight:900}
+.final{text-align:center;padding:35px 10px}.final h2{font-size:45px;margin:10px}
+.restart{border:0;border-radius:18px;padding:15px 25px;font-size:19px;font-weight:900;cursor:pointer;background:#ffe45c;color:#33205e}
+.confetti{position:fixed;top:-20px;width:11px;height:18px;z-index:9999;animation:fall 1.8s linear forwards}
+@keyframes fall{to{transform:translate(var(--x),105vh) rotate(760deg);opacity:.9}}
+@media(max-width:720px){.answers{grid-template-columns:1fr}.visual{flex-direction:column}.pista{max-width:100%}.top{align-items:flex-start}.stats{font-size:17px}}
+
+.start{text-align:center;padding:28px 12px}
+.start .apple{font-size:78px}
+.start h2{font-size:42px;margin:8px 0 10px}
+.start p{font-size:20px;opacity:.9}
+.namebox{max-width:520px;margin:24px auto;display:flex;gap:10px}
+.namebox input{flex:1;padding:16px 18px;border-radius:17px;border:3px solid #7d5cff;font-size:19px;font-weight:800;outline:none}
+.play{border:0;border-radius:17px;padding:16px 22px;font-size:19px;font-weight:900;cursor:pointer;background:linear-gradient(90deg,#ff1998,#ff8a32);color:#fff;box-shadow:0 7px 0 rgba(0,0,0,.22)}
+.playerTag{margin-top:5px;font-size:16px;font-weight:800;color:#ffe45c}
+.badge{display:inline-block;margin:10px 0;padding:10px 18px;border-radius:999px;background:linear-gradient(90deg,#ff1998,#7b4dff,#00c9ff);font-size:23px;font-weight:900}
+
+
+.foodscene{position:relative;min-height:155px;display:flex;align-items:center;justify-content:center;gap:22px;overflow:hidden}
+.foodemoji{font-size:82px;filter:drop-shadow(0 10px 10px rgba(0,0,0,.25));animation:floatFood 2.8s ease-in-out infinite}
+.foodemoji.small{font-size:58px}
+.foodlabel{background:rgba(255,255,255,.94);color:#31235c;border-radius:18px;padding:12px 17px;font-weight:900;box-shadow:0 8px 0 rgba(40,24,91,.28);max-width:330px}
+.molecule{display:flex;gap:7px;align-items:center}
+.hex{width:58px;height:64px;background:linear-gradient(135deg,#ffd84b,#ff7a45);clip-path:polygon(25% 6%,75% 6%,100% 50%,75% 94%,25% 94%,0 50%);box-shadow:0 8px 20px rgba(0,0,0,.2)}
+.hex.blue{background:linear-gradient(135deg,#5ce1e6,#6b5cff)}
+.hex.pink{background:linear-gradient(135deg,#ff61c7,#ff7a45)}
+.chain{display:flex;gap:3px;align-items:center}
+.chain .dot{width:28px;height:28px;border-radius:50%;background:#ffe85c;border:4px solid rgba(255,255,255,.75)}
+@keyframes floatFood{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-8px) rotate(2deg)}}
+
+
+/* Ajustes móviles */
+*{box-sizing:border-box}
+html,body{max-width:100%;overflow-x:hidden}
+.namebox{width:min(100%,560px);display:grid!important;grid-template-columns:1fr!important;gap:12px!important}
+.namebox input,.namebox .play,.play{width:100%!important;max-width:100%!important;margin:0!important}
+@media(max-width:650px){
+  body{padding-left:10px!important;padding-right:10px!important}
+  .start{padding:18px 4px!important}
+  .start h2{font-size:34px!important}
+  .foodscene{min-height:120px!important}
+  .foodemoji{font-size:62px!important}
+}
+.soundToggle{position:fixed;right:14px;bottom:14px;z-index:9999;border:0;border-radius:50%;
+width:52px;height:52px;font-size:25px;cursor:pointer;background:#fff;color:#25135c;
+box-shadow:0 6px 18px rgba(0,0,0,.35)}
+
+
+/* Respuestas: colores base distintos; solo la correcta cambia a verde */
+.answers button:nth-child(1),.opts button:nth-child(1),.option:nth-child(1){background:linear-gradient(90deg,#ff2f9d,#e61b88)!important}
+.answers button:nth-child(2),.opts button:nth-child(2),.option:nth-child(2){background:linear-gradient(90deg,#16bdf2,#2586ed)!important}
+.answers button:nth-child(3),.opts button:nth-child(3),.option:nth-child(3){background:linear-gradient(90deg,#8b5cf6,#6d42d8)!important}
+.answers button:nth-child(4),.opts button:nth-child(4),.option:nth-child(4){background:linear-gradient(90deg,#ff9a36,#f06b32)!important}
+.correct,.correct:hover{background:linear-gradient(90deg,#18d779,#0cab5b)!important;border-color:#8affc1!important;box-shadow:0 0 24px rgba(32,255,137,.75)!important}
+.wrong,.wrong:hover{background:linear-gradient(90deg,#ff405e,#d91d42)!important;border-color:#ff9bab!important;box-shadow:0 0 20px rgba(255,55,90,.65)!important}
+
+
+/* v3: escenas culinarias visibles en cada pregunta */
+.visual-food{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(230px,.8fr);align-items:center}
+.visual-food .foodscene{width:100%;min-width:0}
+.visual-food .pista{max-width:none;width:100%}
+@media(max-width:720px){
+  .visual-food{display:flex;flex-direction:column}
+  .visual-food .foodscene{min-height:145px}
+}
+
+
+/* v4: corrección específica para celular: evita alimentos/textos recortados */
+@media(max-width:720px){
+  .wrap{padding-left:12px!important;padding-right:12px!important}
+  .card{padding:18px 12px!important}
+  .visual-food{
+    width:100%!important;
+    padding:18px 12px!important;
+    gap:14px!important;
+    overflow:hidden!important;
+  }
+  .visual-food .foodscene{
+    width:100%!important;
+    min-height:155px!important;
+    display:flex!important;
+    flex-wrap:wrap!important;
+    justify-content:center!important;
+    align-items:center!important;
+    gap:10px 14px!important;
+    overflow:visible!important;
+    padding:4px!important;
+  }
+  .visual-food .foodemoji{
+    font-size:58px!important;
+    flex:0 0 auto!important;
+  }
+  .visual-food .foodemoji.small{
+    font-size:46px!important;
+  }
+  .visual-food .foodlabel{
+    flex:1 1 180px!important;
+    max-width:260px!important;
+    min-width:0!important;
+    padding:10px 13px!important;
+    font-size:16px!important;
+    line-height:1.2!important;
+    text-align:center!important;
+  }
+  .visual-food .molecule{flex:0 0 auto!important}
+  .visual-food .hex{width:46px!important;height:51px!important}
+  .visual-food .pista{
+    width:100%!important;
+    max-width:100%!important;
+    padding:16px 18px!important;
+    font-size:17px!important;
+    line-height:1.25!important;
+  }
+  .visual-food .pista b{font-size:21px!important}
+}
+@media(max-width:390px){
+  .visual-food .foodemoji{font-size:52px!important}
+  .visual-food .foodemoji.small{font-size:42px!important}
+  .visual-food .foodlabel{flex-basis:150px!important;font-size:15px!important}
+}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+ <div class="top">
+  <div><div class="kicker">🍎 CULINARY CHEMISTRY</div><h1>🎮 Reto Carbohidratos</h1></div>
+  <div class="stats"><div class="stat" id="lives">❤️❤️❤️</div><div class="stat">⭐ <span id="score">0</span> pts</div></div>
+ </div>
+ <div class="progress"><div id="bar"></div></div>
+ <main class="card" id="game"></main>
+</div>
+<script>
+const qs=[
+ {cat:"Clasificación",q:"¿Cuál de estos es un monosacárido?",a:["Glucosa","Sacarosa","Almidón","Celulosa"],ok:0,
+  hint:"Es la unidad más simple de los carbohidratos.",visual:1},
+ {cat:"Clasificación",q:"¿Cuál de estos es un disacárido?",a:["Fructosa","Lactosa","Glucógeno","Celulosa"],ok:1,
+  hint:"Está formado por la unión de dos monosacáridos.",visual:2},
+ {cat:"Almidón",q:"El almidón absorbe agua, se hincha y aumenta la viscosidad al calentarse. ¿Cómo se llama este proceso?",a:["Retrogradación","Caramelización","Gelatinización","Reacción de Maillard"],ok:2,
+  hint:"Piensa en lo que ocurre al calentar almidón en presencia de agua.",visual:3},
+ {cat:"Transformaciones",q:"El azúcar se calienta hasta adquirir color y aroma característicos. ¿Qué proceso ocurre?",a:["Reacción de Maillard","Caramelización","Retrogradación","Gelatinización"],ok:1,
+  hint:"Aquí el protagonista es el azúcar sometido a calentamiento.",visual:4},
+ {cat:"Transformaciones",q:"Una carne desarrolla una superficie dorada al cocinarse. ¿Qué reacción se relaciona con este cambio?",a:["Caramelización","Gelatinización","Reacción de Maillard","Retrogradación"],ok:2,
+  hint:"Relaciona el dorado de alimentos con azúcares reductores y grupos amino.",visual:5}
+];
+let i=0,score=0,lives=3,locked=false,player="";
+const game=document.getElementById("game");
+function shapes(n){
+ if(n===1)return '<div class="hex"></div>';
+ if(n===2)return '<div class="hex"></div><div class="link"></div><div class="hex"></div>';
+ if(n===3)return '<div style="font-size:72px">🥣</div>';
+ if(n===4)return '<div style="font-size:72px">🍮</div>';
+ return '<div style="font-size:72px">🍞</div>';
+}
+function render(){
+ locked=false;
+ document.getElementById("score").textContent=score;
+ document.getElementById("lives").textContent="❤️".repeat(lives)+"🖤".repeat(3-lives);
+ document.getElementById("bar").style.width=((i+1)/qs.length*100)+"%";
+ if(i>=qs.length){finish();return}
+ const x=qs[i];
+ const visualCards=[
+ `<div class="foodscene"><div class="foodemoji">🍎</div><div class="foodemoji small">🍯</div><div class="foodlabel">Una sola unidad de azúcar</div><div class="molecule"><div class="hex"></div></div></div>`,
+ `<div class="foodscene"><div class="foodemoji">🥛</div><div class="foodemoji small">🧀</div><div class="foodlabel">Dos unidades unidas</div><div class="molecule"><div class="hex blue"></div><b style="font-size:28px">＋</b><div class="hex pink"></div></div></div>`,
+ `<div class="foodscene"><div class="foodemoji">🥣</div><div class="foodemoji small">🌽</div><div class="foodlabel">Al calentar con agua, la mezcla se espesa</div><div style="font-size:48px">♨️</div></div>`,
+ `<div class="foodscene"><div class="foodemoji">🍮</div><div class="foodemoji small">🔥</div><div class="foodlabel">Observa el dorado del azúcar por el calor</div><div style="font-size:48px">✨</div></div>`,
+ `<div class="foodscene"><div class="foodemoji">🥩</div><div class="foodemoji small">🍞</div><div class="foodlabel">Superficie dorada al cocinar alimentos</div><div style="font-size:48px">🔥</div></div>`
+ ];
+ // Ilustraciones culinarias por nivel: ayudan a asociar el concepto sin escribir la respuesta.
+ const foodVisuals=[
+   `<div class="foodscene"><div class="foodemoji">🍎</div><div class="molecule"><div class="hex"></div></div><div class="foodemoji small">🍇</div></div>`,
+   `<div class="foodscene"><div class="foodemoji">🥛</div><div class="molecule"><div class="hex blue"></div><div style="font-size:34px;font-weight:900">＋</div><div class="hex pink"></div></div><div class="foodemoji small">🧀</div></div>`,
+   `<div class="foodscene"><div class="foodemoji">🥣</div><div class="chain"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><div class="foodemoji small">🌽</div><div style="font-size:45px">♨️</div></div>`,
+   `<div class="foodscene"><div class="foodemoji">🍮</div><div style="font-size:54px">🔥</div><div class="foodemoji small">🍯</div></div>`,
+   `<div class="foodscene"><div class="foodemoji">🥩</div><div style="font-size:52px">🔥</div><div class="foodemoji small">🍞</div></div>`
+ ];
+ game.innerHTML=`
+ <div class="meta"><span>NIVEL ${i+1} DE ${qs.length}<div class="playerTag">👤 ${player}</div></span><span>${x.cat}</span></div>
+ <div class="visual visual-food">
+    ${visualCards[i]}
+    <div class="pista"><b>💡 PISTA</b>${x.hint}</div>
+  </div>
+ <div class="question">${x.q}</div>
+ <div class="answers">${x.a.map((t,j)=>`<button class="answer" onclick="pick(${j},this)"><span class="num">${j+1}</span><span>${t}</span></button>`).join("")}</div>
+ <div id="feedback"></div>`;
+}
+function pick(j,el){
+ if(locked)return; locked=true;
+ const x=qs[i],buttons=[...document.querySelectorAll(".answer")],f=document.getElementById("feedback");
+ if(j===x.ok){score+=100; sndCorrect();el.classList.add("correct");f.textContent="🎉 ¡Correcto! +100 puntos";confetti();}
+ else{lives=Math.max(0,lives-1);el.classList.add("wrong");buttons[x.ok].classList.add("correct");f.textContent="💥 Casi. La respuesta correcta está marcada.";}
+ document.getElementById("score").textContent=score;
+ document.getElementById("lives").textContent="❤️".repeat(lives)+"🖤".repeat(3-lives);
+ setTimeout(()=>{i++;render()},1400);
+}
+function confetti(){
+ const colors=["#ff1998","#00c9ff","#ffe45c","#27df8e","#ff8a32","#8b5cff"];
+ for(let k=0;k<90;k++){
+  const c=document.createElement("i");c.className="confetti";
+  c.style.left=Math.random()*100+"vw";c.style.background=colors[k%colors.length];
+  c.style.setProperty("--x",(Math.random()*240-120)+"px");c.style.animationDelay=(Math.random()*.25)+"s";
+  document.body.appendChild(c);setTimeout(()=>c.remove(),2300);
+ }
+}
+function rank(){
+ const n=score/100;
+ if(n===5)return ["👑","MÁSTER DE LOS CARBOHIDRATOS","¡Dominio total! 5 de 5."];
+ if(n===4)return ["🏆","EXPERTO EN CARBOHIDRATOS","¡Excelente trabajo!"];
+ if(n===3)return ["🥇","CHEF QUÍMICO","¡Muy buen resultado!"];
+ if(n===2)return ["🥈","APRENDIZ CULINARIO","Vas por buen camino."];
+ return ["🌱","EXPLORADOR DE CARBOHIDRATOS","Sigue practicando y vuelve a intentarlo."];
+}
+let resultSent=false;
+
+function saveResult(){
+  if(resultSent) return;
+  resultSent=true;
+  const data={nombre:player, aciertos:score/100, puntaje:score, total:500};
+  fetch("https://script.google.com/macros/s/AKfycbzhvvysxvjTz0L1mj5E6JBZ6eylY086cOvIAizQRaz6NwmrTuwMBuh-mzpBsLzCYaXd/exec", {
+    method:"POST",
+    mode:"no-cors",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify(data)
+  }).catch(err=>{
+    console.error("No se pudo enviar el resultado:",err);
+    resultSent=false;
+  });
+}
+
+function finish(){
+ saveResult();
+ sndFinish();
+ confetti();
+ const r=rank();
+ game.innerHTML=`<div class="final"><div style="font-size:76px">${r[0]}</div>
+ <h2>¡Reto terminado, ${player}!</h2>
+ <div class="badge">${r[1]}</div>
+ <p style="font-size:22px">${r[2]}</p>
+ <p style="font-size:24px">Puntaje final: <b>${score} / 500</b></p>
+ <p>Respuestas correctas: <b>${score/100} de 5</b></p>
+ <button class="restart" onclick="i=0;score=0;lives=3;resultSent=false;render()">🔄 Jugar otra vez</button>
+ <button class="restart" style="margin-left:8px" onclick="startScreen()">👤 Cambiar jugador</button></div>`;
+}
+function startGame(){
+ const inp=document.getElementById("playerName");
+ const name=(inp.value||"").trim();
+ if(!name){inp.focus();inp.style.borderColor="#ff2d75";return}
+ player=name;i=0;score=0;lives=3;resultSent=false;
+ document.getElementById("score").textContent="0";
+ document.getElementById("lives").textContent="❤️❤️❤️";
+ render();
+}
+function startScreen(){
+ document.getElementById("bar").style.width="0%";
+ game.innerHTML=`<div class="start">
+ <div class="apple">🍎</div>
+ <div class="kicker">CULINARY CHEMISTRY</div>
+ <h2>🎮 Reto Carbohidratos</h2>
+ <p>Escribe tu nombre para comenzar el desafío.</p>
+ <div class="namebox"><input id="playerName" maxlength="30" placeholder="Nombre del jugador" onkeydown="if(event.key==='Enter')startGame()">
+ <button class="play" onclick="startGame()">JUGAR ▶</button></div>
+ <p>5 niveles · 3 vidas · 500 puntos posibles</p></div>`;
+}
+startScreen();
+
+let soundOn=true;
+let audioCtx=null;
+function ctx(){
+ if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+ if(audioCtx.state==="suspended") audioCtx.resume();
+ return audioCtx;
+}
+function tone(freq,dur,type="sine",vol=.08,delay=0){
+ if(!soundOn)return;
+ const c=ctx(),o=c.createOscillator(),g=c.createGain(),t=c.currentTime+delay;
+ o.type=type;o.frequency.setValueAtTime(freq,t);
+ g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.015);
+ g.gain.exponentialRampToValueAtTime(.0001,t+dur);
+ o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+dur+.03);
+}
+function sndClick(){tone(420,.08,"sine",.035)}
+function sndCorrect(){tone(523,.16,"sine",.07);tone(659,.16,"sine",.07,.11);tone(784,.24,"sine",.075,.22)}
+function sndWrong(){tone(190,.18,"sawtooth",.045);tone(145,.25,"sawtooth",.04,.12)}
+function sndFinish(){[523,659,784,1047].forEach((f,k)=>tone(f,.28,"sine",.07,k*.13))}
+function toggleSound(){
+ soundOn=!soundOn;
+ document.getElementById("soundToggle").textContent=soundOn?"🔊":"🔇";
+ if(soundOn)sndClick();
+}
+document.addEventListener("click",function(e){
+ if(e.target.closest(".play,.restart")) sndClick();
+});
+document.body.insertAdjacentHTML("beforeend",'<button id="soundToggle" class="soundToggle" onclick="toggleSound()" title="Activar o silenciar sonidos">🔊</button>');
+
+</script>
+</body>
+</html>
