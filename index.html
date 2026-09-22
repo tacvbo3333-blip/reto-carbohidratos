@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Reto Carbohidratos — Quiz</title>
+<style>
+:root{--bg:#17132b;--panel:#241d43;--card:#30265a;--text:#fff;--muted:#eee8ff;--accent:#ffd84d;--green:#34d399;--red:#fb7185}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at 15% 10%,#ff3d8d55,transparent 28%),radial-gradient(circle at 85% 85%,#00d4ff44,transparent 28%),linear-gradient(135deg,#17132b,#3b147a);color:var(--text);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}
+.game{width:min(850px,100%);background:var(--panel);border:2px solid #66599a;border-radius:28px;padding:24px;box-shadow:0 20px 60px #0006}
+header{display:flex;justify-content:space-between;gap:16px;align-items:center}.eyebrow{font-weight:800;color:var(--accent);letter-spacing:1px}.title{font-size:clamp(25px,5vw,42px);font-weight:900}.stats{text-align:right;font-weight:800;font-size:18px}.hearts{font-size:24px}
+.progress{height:12px;background:#151126;border-radius:999px;overflow:hidden;margin:20px 0}.bar{height:100%;width:0;background:linear-gradient(90deg,#ffd54a,#ff8a4c);transition:.3s}
+.card{background:linear-gradient(145deg,#35276b,#251b50);border-radius:24px;padding:24px;border:1px solid #7668a6}.meta{display:flex;justify-content:space-between;color:var(--muted);font-weight:800}.emoji{display:none}.visual{position:relative;min-height:185px;margin:16px auto 20px;border-radius:24px;overflow:hidden;
+background:radial-gradient(circle at 20% 20%,#ffffff38,transparent 28%),linear-gradient(135deg,#ff4fa3,#7c3cff 48%,#16c7d9);
+border:2px solid #ffffff55;box-shadow:inset 0 0 35px #0003,0 12px 30px #0004;display:flex;align-items:center;justify-content:center;gap:20px;padding:18px}
+.visual:before,.visual:after{content:"✦";position:absolute;color:#fff7;font-size:28px}.visual:before{left:8%;top:14%}.visual:after{right:10%;bottom:14%}
+.chem{background:#fff;color:#39246e;border-radius:22px;padding:14px 18px;min-width:130px;text-align:center;box-shadow:0 9px 0 #291b62,0 14px 28px #0004;transform:rotate(-2deg)}
+.chem b{display:block;font-size:22px;color:#ff3d8d}.chem span{font-size:13px;font-weight:900;color:#654fa0}
+.food{font-size:76px;filter:drop-shadow(0 8px 5px #0005);animation:float 2.8s ease-in-out infinite}.food:nth-child(2){animation-delay:.4s}.food:nth-child(3){animation-delay:.8s}
+.badge{position:absolute;right:14px;top:12px;background:#ffd54a;color:#39246e;font-weight:900;padding:7px 12px;border-radius:999px;transform:rotate(3deg)}
+@keyframes float{50%{transform:translateY(-8px) rotate(3deg)}}
+.question{text-align:center;font-size:clamp(21px,4vw,30px);font-weight:900;margin:10px auto 24px;max-width:700px}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:12px}.option{border:2px solid #a997ff;border-radius:18px;padding:17px;background:#211a3e;color:white;font-size:17px;font-weight:800;text-align:left;cursor:pointer}.option:hover{border-color:var(--accent)}.option:disabled{cursor:default;opacity:.95}.correct{border-color:var(--green)!important;background:#164b42!important}.wrong{border-color:var(--red)!important;background:#55243a!important}
+.feedback{text-align:center;min-height:52px;padding:16px 5px 5px;font-size:17px;font-weight:800}.btn{display:block;margin:14px auto 0;border:0;border-radius:16px;background:var(--accent);color:#211a3e;padding:14px 24px;font-size:17px;font-weight:900;cursor:pointer}.next{display:none}.result{text-align:center;padding:30px 5px}.trophy{font-size:82px}.big{font-size:42px;font-weight:900;margin:12px}.namebox{max-width:500px;margin:22px auto}.namebox input{width:100%;font-size:18px;padding:15px;border-radius:14px;border:2px solid #756aa0;background:#17132b;color:white}.small{color:var(--muted);font-size:14px;text-align:center}.status{margin-top:12px;font-weight:800;text-align:center}
+@media(max-width:600px){.options{grid-template-columns:1fr}.game{padding:15px}.card{padding:17px}.stats{font-size:15px}}
+
+.correct{animation:correctPop .35s ease}
+@keyframes correctPop{50%{transform:scale(1.025);box-shadow:0 0 35px #34d39999}}
+
+
+/* v3 sin emojis + brillo + confeti */
+.food{display:none!important}
+.visual{min-height:190px}
+.molecule{display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 10px 8px #0005)}
+.atom{width:72px;height:72px;border-radius:50%;background:linear-gradient(145deg,#fff,#ffd84d);border:5px solid #fff;box-shadow:0 0 0 5px #ffffff33}
+.atom.alt{background:linear-gradient(145deg,#fff,#5ee7ff)}
+.bond{width:58px;height:12px;background:#fff;border-radius:10px;box-shadow:0 0 12px #fff}
+.hex{width:90px;height:78px;background:linear-gradient(145deg,#ffdb4d,#ff5fa2);clip-path:polygon(25% 0,75% 0,100% 50%,75% 100%,25% 100%,0 50%)}
+.drop{width:42px;height:55px;background:linear-gradient(#d9faff,#25c9ff);border-radius:55% 45% 55% 45%;transform:rotate(45deg);border:3px solid #fff}
+.flame{width:74px;height:92px;background:linear-gradient(#fff36a,#ff9a2e 55%,#ff3d78);clip-path:polygon(50% 0,82% 42%,72% 100%,28% 100%,12% 50%);filter:drop-shadow(0 0 15px #ff8b3d)}
+.brown{width:120px;height:78px;border-radius:50%;background:linear-gradient(145deg,#f6b65a,#8f421f);border:5px solid #ffe2a8;box-shadow:0 10px 18px #0004}
+.option{position:relative;overflow:hidden;transition:.18s}
+.option:before{content:"";position:absolute;top:-120%;left:-35%;width:28%;height:340%;background:linear-gradient(90deg,transparent,#ffffff75,transparent);transform:rotate(24deg);transition:left .55s}
+.option:hover{transform:translateY(-3px) scale(1.012);border-color:#fff;box-shadow:0 0 24px #9f7cff99}
+.option:hover:before{left:125%}
+button{box-shadow:0 0 18px #ffd84d55;animation:glow 2s ease-in-out infinite}
+@keyframes glow{50%{box-shadow:0 0 30px #ffd84daa}}
+.confetti-piece{position:fixed;top:-20px;width:10px;height:18px;z-index:9999;pointer-events:none;animation:fall 2.6s linear forwards}
+@keyframes fall{to{transform:translate3d(var(--drift),110vh,0) rotate(760deg);opacity:.9}}
+.result-panel{background:linear-gradient(135deg,#ff4fa322,#16c7d922);border:2px solid #ffffff44;border-radius:24px;padding:22px;margin:18px auto;max-width:650px;box-shadow:inset 0 0 28px #0003}
+.result-title{font-size:clamp(25px,5vw,38px);font-weight:900;margin:8px 0;color:#ffd84d;text-shadow:0 0 18px #ffd84d55}
+.result-msg{font-size:18px;font-weight:800;line-height:1.45;margin:12px auto;max-width:600px}
+.record{display:inline-block;margin:10px 0;padding:10px 16px;border-radius:999px;background:linear-gradient(90deg,#ff4fa3,#7c3cff,#16c7d9);font-weight:900;box-shadow:0 8px 22px #0004}
+.result-stats{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:16px 0}.stat-chip{background:#17132b;border:1px solid #ffffff44;border-radius:16px;padding:12px 16px;font-weight:900;min-width:130px}
+.result-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}.btn.secondary{background:#5ee7ff}.btn.finish{background:#ff8a4c}.score-pop{animation:scorePop .7s cubic-bezier(.2,.8,.2,1)}
+@keyframes scorePop{0%{transform:scale(.45);opacity:0}70%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}
+
+</style></head>
+<body><main class="game">
+<header><div><div class="eyebrow">🍞 CULINARY CHEMISTRY</div><div class="title">🎮 Reto Carbohidratos</div></div><div class="stats"><div id="hearts" class="hearts">❤️❤️❤️</div>⭐ <span id="points">0</span> pts</div></header>
+<div class="progress"><div id="bar" class="bar"></div></div>
+<section id="card" class="card"></section>
+</main>
+<script>
+function lanzarConfeti(cantidad=70){
+ const c=["#ffd84d","#ff4fa3","#5ee7ff","#7cff8e","#b38cff","#ff8a4c"];
+ for(let i=0;i<cantidad;i++){
+  const p=document.createElement("i"); p.className="confetti-piece";
+  p.style.left=Math.random()*100+"vw"; p.style.background=c[Math.floor(Math.random()*c.length)];
+  p.style.setProperty("--drift",((Math.random()-.5)*260)+"px"); p.style.animationDelay=Math.random()*.4+"s";
+  document.body.appendChild(p); setTimeout(()=>p.remove(),3200);
+ }
+}
+
+/* PEGA AQUÍ la URL de tu implementación de Google Apps Script, entre comillas. */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhvvysxvjTz0L1mj5E6JBZ6eylY086cOvIAizQRaz6NwmrTuwMBuh-mzpBsLzCYaXd/exec";
+
+const questions=[
+{t:"Clasificación",v:`<div class="visual"><div class="hex"></div><div class="chem"><b>CLASIFICA</b><span>IDENTIFICA LA UNIDAD MÁS SIMPLE</span></div><div class="badge">NIVEL 1</div></div>`,q:"¿Cuál de estos es un monosacárido?",o:["Glucosa","Sacarosa","Almidón","Celulosa"],a:0,m:"La glucosa es un monosacárido."},
+{t:"Clasificación",v:`<div class="visual"><div class="molecule"><div class="atom"></div><div class="bond"></div><div class="atom alt"></div></div><div class="chem"><b>CLASIFICA</b><span>DOS UNIDADES UNIDAS</span></div><div class="badge">NIVEL 2</div></div>`,q:"¿Cuál de estos es un disacárido?",o:["Fructosa","Lactosa","Glucógeno","Celulosa"],a:1,m:"La lactosa es un disacárido."},
+{t:"Almidón",v:`<div class="visual"><div class="drop"></div><div class="flame"></div><div class="chem"><b>TRANSFORMACIÓN</b><span>AGUA + CALOR + CAMBIO DE TEXTURA</span></div><div class="badge">NIVEL 3</div></div>`,q:"El almidón absorbe agua, se hincha y aumenta la viscosidad al calentarse. ¿Cómo se llama este proceso?",o:["Retrogradación","Caramelización","Gelatinización","Maillard"],a:2,m:"Este proceso se llama gelatinización."},
+{t:"Duelo del color",v:`<div class="visual"><div class="flame"></div><div class="brown"></div><div class="chem"><b>OBSERVA</b><span>CALOR + CAMBIO DE COLOR Y AROMA</span></div><div class="badge">NIVEL 4</div></div>`,q:"Azúcar calentada hasta adquirir color y aroma característicos. ¿Qué proceso ocurre?",o:["Maillard","Caramelización","Retrogradación","Gelatinización"],a:1,m:"Es caramelización."},
+{t:"Duelo del color",v:`<div class="visual"><div class="flame"></div><div class="brown"></div><div class="chem"><b>DORADO</b><span>COLOR + AROMA + SABOR</span></div><div class="badge">NIVEL 5</div></div>`,q:"Una carne desarrolla una superficie dorada al cocinarse. ¿Qué reacción se relaciona con este cambio?",o:["Caramelización","Gelatinización","Reacción de Maillard","Retrogradación"],a:2,m:"Corresponde a la reacción de Maillard."}
+];
+let i=0,points=0,lives=3,locked=false,student="",attempt=1,previousBest=0;
+const $=id=>document.getElementById(id), card=$("card");
+function playerKey(name){return "retoCarbohidratos:"+name.trim().toLowerCase().replace(/\s+/g," ")}
+function getHistory(name){try{return JSON.parse(localStorage.getItem(playerKey(name)))||{attempts:0,best:0,last:null}}catch(e){return {attempts:0,best:0,last:null}}}
+function startScreen(prefill=""){ $("bar").style.width="0"; card.innerHTML=`<div class="result"><div class="trophy">🎮</div><div class="eyebrow">LISTO PARA JUGAR</div><h2>Escribe tu nombre</h2><div class="namebox"><input id="studentName" maxlength="60" autocomplete="name" placeholder="Nombre del participante" value="${prefill.replace(/&/g,"&amp;").replace(/"/g,"&quot;")}"></div><button id="start" class="btn">🚀 Iniciar reto</button><p class="small">Tu nombre y puntaje se registrarán al terminar.</p></div>`;$("start").onclick=()=>{student=$("studentName").value.trim();if(!student){$("studentName").focus();return}const h=getHistory(student);attempt=h.attempts+1;previousBest=h.best||0;render();}}
+function render(){locked=false;const x=questions[i];$("bar").style.width=((i+1)/questions.length*100)+"%";card.innerHTML=`<div class="meta"><span>NIVEL ${i+1} DE ${questions.length}</span><span>${x.t}</span></div>${x.v}<div class="question">${x.q}</div><div id="options" class="options"></div><div id="feedback" class="feedback"></div><button id="next" class="btn next">Siguiente ➜</button>`;x.o.forEach((v,n)=>{const b=document.createElement("button");b.className="option";b.textContent=["🔵 ","🟣 ","🟠 ","🟢 "][n]+v;b.onclick=()=>answer(n,b);$("options").appendChild(b)});$("next").onclick=()=>{i++;i<questions.length?render():finish()}}
+function answer(n,b){if(locked)return;locked=true;const x=questions[i],bs=[...$("options").children];if(n===x.a){points+=100;b.classList.add("correct");lanzarConfeti(28);$("feedback").textContent="🎉 ¡CORRECTO! "+x.m}else{lives=Math.max(0,lives-1);b.classList.add("wrong");bs[x.a].classList.add("correct");$("feedback").textContent="💡 "+x.m}$("points").textContent=points;$("hearts").textContent="❤️".repeat(lives)+"🖤".repeat(3-lives);bs.forEach(z=>z.disabled=true);$("next").style.display="block"}
+async function saveScore(){const status=$("saveStatus");if(!SCRIPT_URL.startsWith("https://script.google.com/")){status.textContent="⚙️ Falta conectar la URL de Google Sheets.";return}status.textContent="☁️ Guardando resultado…";try{await fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({nombre:student,intento:attempt,aciertos:points/100,puntaje:points,total:500,mejorPuntaje:Math.max(previousBest,points),fecha:new Date().toISOString()})});status.textContent="✅ 🎉 Resultado enviado."}catch(e){status.textContent="❌ No se pudo enviar. Revisa la conexión a internet."}}
+function finish(){
+ $("bar").style.width="100%";
+ const h=getHistory(student), oldBest=h.best||0, oldLast=h.last;
+ const newBest=Math.max(oldBest,points), improved=oldLast!==null && points>oldLast, delta=oldLast===null?0:points-oldLast, isRecord=points>oldBest;
+ localStorage.setItem(playerKey(student),JSON.stringify({attempts:(h.attempts||0)+1,best:newBest,last:points}));
+ attempt=(h.attempts||0)+1; previousBest=oldBest;
+ let title,msg,icon;
+ if(points===500){icon="🏆";title="¡MAESTRO DE LOS CARBOHIDRATOS!";msg="Excelente, dominaste el reto."}
+ else if(points===400){icon="🌟";title="¡EXCELENTE!";msg="Casi perfecto. Tienes muy buen dominio del tema."}
+ else if(points===300){icon="🔥";title="¡MUY BIEN!";msg="Superaste el reto, pero todavía puedes mejorar."}
+ else if(points===200){icon="🧪";title="¡SIGUE PRACTICANDO!";msg="Vas por buen camino. Repasa algunos conceptos."}
+ else {icon="📚";title="¡INTÉNTALO DE NUEVO!";msg="Revisa el tema y vuelve a enfrentarte al reto."}
+ let compare="";
+ if(attempt===1) compare="🎮 ¡Primer intento completado! ¿Puedes superar tu puntuación?";
+ else if(isRecord) compare=`🚀 ¡NUEVO RÉCORD! Mejoraste ${points-oldBest} puntos sobre tu mejor marca.`;
+ else if(improved) compare=`📈 ¡Mejoraste ${delta} puntos respecto a tu intento anterior! Tu récord es ${newBest}.`;
+ else if(delta===0) compare=`⚡ Igualaste tu intento anterior. Tu récord sigue en ${newBest} puntos.`;
+ else compare=`🏆 Tu récord sigue siendo ${newBest} puntos. ¡Puedes volver a intentarlo!`;
+ card.innerHTML=`<div class="result"><div class="trophy score-pop">${icon}</div><div class="eyebrow">MISIÓN COMPLETADA</div><div class="result-title">${title}</div><h2>${student}</h2><div class="result-panel"><div class="big score-pop">${points} / 500</div><div class="result-msg">${msg}</div><div class="record">${compare}</div><div class="result-stats"><div class="stat-chip">✅ Aciertos<br>${points/100} / 5</div><div class="stat-chip">🎮 Intento<br>${attempt}</div><div class="stat-chip">🏅 Mejor<br>${newBest} pts</div></div><div id="saveStatus" class="status"></div></div><div class="result-actions"><button id="again" class="btn secondary">🔄 Jugar de nuevo</button><button id="finishBtn" class="btn finish">🏠 Finalizar</button></div></div>`;
+ if(points>=300) setTimeout(()=>lanzarConfeti(130),250);
+ saveScore();
+ $("again").onclick=()=>{i=0;points=0;lives=3;locked=false;$("points").textContent="0";$("hearts").textContent="❤️❤️❤️";const hh=getHistory(student);attempt=hh.attempts+1;previousBest=hh.best||0;render()};
+ $("finishBtn").onclick=()=>{i=0;points=0;lives=3;locked=false;const lastStudent=student;student="";$("points").textContent="0";$("hearts").textContent="❤️❤️❤️";startScreen("")};
+}
+startScreen();
+</script></body></html>
